@@ -54,13 +54,14 @@ lpBuf1	db	1024 dup(?)	; temp Buffers
 
 .data
 buffer_for_string db 10 dup(0)
-title_string db "Результат:  ",0
+title_string db "Переменная W:  ",0
 ;	szformat db "%u",0Dh,0Ah,0		; изменяем формат вывода на dec
-	szformat db "%d",0Dh,0Ah,0	
-	; изменяем формат вывода на hex
-	a dd 12
-	d dd 4
-	cc dd 10
+	szformat db "%d",0Dh,0Ah,0		; изменяем формат вывода на hex
+	a dw 3
+	b dw 5
+	w dw 0
+    	arr dw 1,5,0,2,9,5,2
+    	arrcount dw ($-arr)/2
 
 .code
 start:
@@ -68,32 +69,32 @@ start:
 main proc
 	LOCAL var_00		:DWORD
 	LOCAL var_01		:DWORD
-	
 
 ; Затем здесь(ниже) запишите решение. 
 ; Записи возможны только до начала следующей линии решетки ...
-; ###########################################################################    
-mov eax, cc 
-imul eax, d 
-add eax, 23
-mov ecx,eax 
-mov ebx,2
-mov eax,a 
-CDQ 
-idiv ebx 
-inc eax 
-imul eax, d 
-inc eax 
-mov ebx, eax 
-mov eax, ecx 
-CDQ 
-idiv ebx 
-
-
-
-
-
-
+; ###########################################################################
+mov cx,[arrcount]
+    lea esi,[arr] ; вычисляет эффективный адрес ИСТОЧНИКА и помещает его в ПРИЁМНИК (LEA ПРИЁМНИК, ИСТОЧНИК)
+    loop0:
+        mov bx,[esi]
+        mov ax,bx
+        cwd
+        div [a]
+        or dx,dx
+        jnz no
+            mov ax,bx
+            cwd
+            div [b]
+            or dx,dx
+            jz no
+                mov [w],1
+                jmp done
+        no:
+        add esi,2
+        dec cx
+        jnz loop0
+    done:
+    ret
 
 ; Меняем имя регистра на имя в котором находится ваш результат
 mov Result,eax
